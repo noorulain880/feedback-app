@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: feedback-web
+    ports:
+      - "5001:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: feedback_user
+      DB_PASSWORD: feedback_pass
+      DB_NAME: feedback_db
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: feedback-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: feedback_db
+      MYSQL_USER: feedback_user
+      MYSQL_PASSWORD: feedback_pass
+    volumes:
+      - feedback-db-data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  feedback-db-data:

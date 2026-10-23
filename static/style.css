@@ -1,0 +1,101 @@
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  margin: 0;
+  background: #0b1220;
+  color: #e8ecf3;
+}
+
+.topbar {
+  background: #131b2e;
+  border-bottom: 1px solid #232d47;
+  padding: 18px 36px;
+}
+.topbar .mark {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #c9a227;
+  font-size: 1.05rem;
+}
+
+.content {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.form-card, .list-card {
+  background: #131b2e;
+  border: 1px solid #232d47;
+  border-radius: 10px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+h1 { margin: 0 0 4px; font-size: 1.6rem; }
+h2 { margin: 0 0 16px; font-size: 1.2rem; color: #c9a227; }
+.subtitle { color: #8a93ab; margin: 0 0 20px; }
+
+label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #8a93ab;
+  margin: 16px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #232d47;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #0b1220;
+  color: #e8ecf3;
+  font-family: inherit;
+  resize: vertical;
+}
+input:focus, textarea:focus { outline: none; border-color: #c9a227; }
+
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  background: #c9a227;
+  color: #0b1220;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+button:hover { background: #e0b72f; }
+
+.error {
+  background: #2a1620;
+  color: #e5807a;
+  padding: 11px 14px;
+  border-radius: 6px;
+  font-size: 0.87rem;
+  border-left: 4px solid #a3462e;
+  margin-bottom: 4px;
+}
+
+.feedback-item {
+  list-style: none;
+  border-bottom: 1px solid #232d47;
+  padding: 14px 0;
+}
+.feedback-item:last-child { border-bottom: none; }
+.feedback-item strong { color: #c9a227; }
+.feedback-item .timestamp {
+  float: right;
+  color: #5c6680;
+  font-size: 0.78rem;
+}
+.feedback-item p { margin: 6px 0 0; color: #c5cbda; }
+.empty { color: #5c6680; }
+#feedback-list { padding: 0; margin: 0; }

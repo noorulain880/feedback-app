@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page">
+        <header class="topbar">
+            <span class="mark">FEEDBACK BOARD</span>
+        </header>
+
+        <main class="content">
+            <section class="form-card">
+                <h1>Leave Feedback</h1>
+                <p class="subtitle">Tell us what you think</p>
+
+                {% if error %}
+                    <p class="error">{{ error }}</p>
+                {% endif %}
+
+                <form method="POST" action="/">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your name">
+
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" placeholder="Your feedback"></textarea>
+
+                    <button type="submit" id="submit-btn">Submit</button>
+                </form>
+            </section>
+
+            <section class="list-card">
+                <h2>All Feedback ({{ entries|length }})</h2>
+                {% if entries %}
+                    <ul id="feedback-list">
+                        {% for entry in entries %}
+                            <li class="feedback-item">
+                                <strong>{{ entry.name }}</strong>
+                                <span class="timestamp">{{ entry.created_at }}</span>
+                                <p>{{ entry.message }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty">No feedback yet. Be the first!</p>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>
