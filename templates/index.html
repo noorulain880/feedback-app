@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Feedback Board</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="page">
         <header class="topbar">
-            <span class="mark">FEEDBACK BOARD</span>
+            <span class="mark">COURSE FEEDBACK BOARD</span>
         </header>
 
         <main class="content">
@@ -17,34 +18,123 @@
                 <p class="subtitle">Tell us what you think</p>
 
                 {% if error %}
-                    <p class="error">{{ error }}</p>
+                    <p class="error" id="form-error">{{ error }}</p>
                 {% endif %}
 
                 <form method="POST" action="/">
                     <label for="name">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Your name">
+                    <input type="text" id="name" name="name"
+                           placeholder="Your name (max {{ max_name }} characters)" value="{{ form.name }}">
+
+                    <div class="row">
+                        <div>
+                            <label for="course">Course</label>
+                            <select id="course" name="course">
+                                {% for c in courses %}
+                                    <option value="{{ c }}" {% if form.course == c %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="category">Type</label>
+                            <select id="category" name="category">
+                                {% for c in categories %}
+                                    <option value="{{ c }}" {% if form.category == c %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="rating">Rating</label>
+                            <select id="rating" name="rating">
+                                {% for n in [5, 4, 3, 2, 1] %}
+                                    <option value="{{ n }}" {% if form.rating == n %}selected{% endif %}>{{ n }} - {{ ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'][n] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
 
                     <label for="message">Message</label>
-                    <textarea id="message" name="message" rows="4" placeholder="Your feedback"></textarea>
+                    <textarea id="message" name="message" rows="4"
+                              placeholder="Your feedback (5 to {{ max_message }} characters)">{{ form.message }}</textarea>
 
                     <button type="submit" id="submit-btn">Submit</button>
                 </form>
             </section>
 
             <section class="list-card">
-                <h2>All Feedback ({{ entries|length }})</h2>
+                <h2>Rating by Course</h2>
+                <div id="course-chart">
+                    {% for row in chart %}
+                        <div class="bar-row">
+                            <span class="bar-label">{{ row.course }}</span>
+                            <progress class="bar-progress" value="{{ row.avg }}" max="5"></progress>
+                            <span class="bar-value">
+                                {% if row.count %}
+                                    {{ row.avg }} / 5 &middot; {{ row.count }} {{ 'entry' if row.count == 1 else 'entries' }}
+                                {% else %}
+                                    No entries
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="list-card">
+                <h2>All Feedback ({{ total }})</h2>
+
+                <div class="filters">
+                    <a id="filter-All" class="chip {% if not selected %}active{% endif %}"
+                       href="{{ url_for('index', sort=sort_arg) }}">All ({{ total }})</a>
+                    {% for c in categories %}
+                        <a id="filter-{{ c }}" class="chip {% if selected == c %}active{% endif %}"
+                           href="{{ url_for('index', category=c, sort=sort_arg) }}">{{ c }} ({{ counts.get(c, 0) }})</a>
+                    {% endfor %}
+                </div>
+
+                <form method="GET" action="/" class="sort-form">
+                    {% if selected %}
+                        <input type="hidden" name="category" value="{{ selected }}">
+                    {% endif %}
+                    <label for="sort">Sort by</label>
+                    <select id="sort" name="sort" onchange="this.form.submit()">
+                        {% for key, label in sorts %}
+                            <option value="{{ key }}" {% if sort == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <noscript><button type="submit" class="sort-go">Apply</button></noscript>
+                </form>
+
                 {% if entries %}
                     <ul id="feedback-list">
                         {% for entry in entries %}
                             <li class="feedback-item">
-                                <strong>{{ entry.name }}</strong>
-                                <span class="timestamp">{{ entry.created_at }}</span>
+                                <div class="item-head">
+                                    <strong>{{ entry.name }}</strong>
+                                    <span class="badge badge-{{ entry.category|lower }}">{{ entry.category }}</span>
+                                    <span class="course-tag">{{ entry.course }}</span>
+                                    <span class="stars" title="{{ entry.rating }} / 5">{{ '★' * entry.rating }}{{ '☆' * (5 - entry.rating) }}</span>
+                                    <span class="timestamp">{{ entry.created_at }}</span>
+                                </div>
                                 <p>{{ entry.message }}</p>
+                                <div class="item-actions">
+                                    <form method="POST" action="{{ url_for('helpful', entry_id=entry.id) }}" class="inline-form">
+                                        <input type="hidden" name="back" value="{{ selected }}">
+                                        <input type="hidden" name="sort" value="{{ sort }}">
+                                        <button type="submit" class="helpful-btn">&#128077; Helpful <span class="helpful-count">{{ entry.helpful }}</span></button>
+                                    </form>
+                                    <a class="edit-btn" href="{{ url_for('edit', entry_id=entry.id) }}">Edit</a>
+                                    <form method="POST" action="{{ url_for('delete', entry_id=entry.id) }}" class="inline-form">
+                                        <input type="hidden" name="back" value="{{ selected }}">
+                                        <input type="hidden" name="sort" value="{{ sort }}">
+                                        <button type="submit" class="delete-btn">Delete</button>
+                                    </form>
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="empty">No feedback yet. Be the first!</p>
+                    <p class="empty" id="empty-message">No feedback here yet.</p>
                 {% endif %}
             </section>
         </main>

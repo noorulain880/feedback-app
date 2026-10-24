@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Feedback</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page">
+        <header class="topbar">
+            <span class="mark">COURSE FEEDBACK BOARD</span>
+        </header>
+
+        <main class="content">
+            <section class="form-card">
+                <h1>Edit Feedback</h1>
+                <p class="subtitle">Update this entry</p>
+
+                {% if error %}
+                    <p class="error" id="form-error">{{ error }}</p>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('edit', entry_id=entry_id) }}">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name"
+                           placeholder="Your name (max {{ max_name }} characters)" value="{{ form.name }}">
+
+                    <div class="row">
+                        <div>
+                            <label for="course">Course</label>
+                            <select id="course" name="course">
+                                {% for c in courses %}
+                                    <option value="{{ c }}" {% if form.course == c %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="category">Type</label>
+                            <select id="category" name="category">
+                                {% for c in categories %}
+                                    <option value="{{ c }}" {% if form.category == c %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="rating">Rating</label>
+                            <select id="rating" name="rating">
+                                {% for n in [5, 4, 3, 2, 1] %}
+                                    <option value="{{ n }}" {% if form.rating == n %}selected{% endif %}>{{ n }} - {{ ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'][n] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4"
+                              placeholder="Your feedback (5 to {{ max_message }} characters)">{{ form.message }}</textarea>
+
+                    <button type="submit" id="save-btn">Save changes</button>
+                    <a class="cancel-link" href="{{ url_for('index') }}">Cancel</a>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
